@@ -1,0 +1,22 @@
+{
+    "prompts": [],
+    "image_prompts": [],
+    "max_iterations": 500,
+    "display_freq": 50,
+    "size": [256, 256],
+    "init_image": "",
+    "init_noise": "gradient",
+    "init_weight": 0.0,
+    "clip_model": "./models/ViT-B-32.pt",
+    "vqgan_checkpoint": "./models/vqgan_imagenet_f16_16384.ckpt",
+    "vqgan_config": "./configs/vqgan_imagenet_f16_16384.json",
+    "noise_prompt_seeds": [],
+    "noise_prompt_weights": [],
+    "step_size": 0.1,
+    "cutn": 32,
+    "cut_pow": 1.0,
+    "seed": 42,
+    "optimizer": "Adam",
+    "output": "output.png",
+    "augments": ["Af", "Pe", "Ji", "Er"]
+}
