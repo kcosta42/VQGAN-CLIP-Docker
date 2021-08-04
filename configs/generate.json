@@ -1,11 +1,11 @@
 {
-    "prompts": [],
+    "prompts": ["a painting of a potato"],
     "image_prompts": [],
     "max_iterations": 500,
     "display_freq": 50,
     "size": [256, 256],
     "init_image": "",
-    "init_noise": "gradient",
+    "init_noise": "",
     "init_weight": 0.0,
     "clip_model": "./models/ViT-B-32.pt",
     "vqgan_checkpoint": "./models/vqgan_imagenet_f16_16384.ckpt",

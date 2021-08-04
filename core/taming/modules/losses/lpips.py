@@ -2,10 +2,9 @@
 
 import torch
 import torch.nn as nn
-from torchvision import models
 from collections import namedtuple
 
-from core.taming.utils import normalize_tensor, spatial_average
+from core.taming.utils import normalize_tensor, spatial_average, load_vgg
 
 
 class LPIPS(nn.Module):
@@ -25,7 +24,7 @@ class LPIPS(nn.Module):
             param.requires_grad = False
 
     def load_from_pretrained(self, name="vgg_lpips"):
-        ckpt = "./models/vgg.pt"  # FIXME
+        ckpt = "./models/vgg.pth"  # FIXME
         self.load_state_dict(torch.load(ckpt, map_location=torch.device("cpu")), strict=False)
         print("loaded pretrained LPIPS loss from {}".format(ckpt))
 
@@ -76,7 +75,7 @@ class NetLinLayer(nn.Module):
 class vgg16(torch.nn.Module):
     def __init__(self, requires_grad=False, pretrained=True):
         super(vgg16, self).__init__()
-        vgg_pretrained_features = models.vgg16(pretrained=pretrained).features
+        vgg_pretrained_features = load_vgg(pretrained=pretrained).features
         self.slice1 = torch.nn.Sequential()
         self.slice2 = torch.nn.Sequential()
         self.slice3 = torch.nn.Sequential()

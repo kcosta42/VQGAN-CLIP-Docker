@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from core.utils import ReplaceGrad
+from core.utils.gradients import ReplaceGrad
 
 
 class Prompt(nn.Module):
@@ -18,3 +18,9 @@ class Prompt(nn.Module):
         dists = input_normed.sub(embed_normed).norm(dim=2).div(2).arcsin().pow(2).mul(2)
         dists = dists * self.weight.sign()
         return self.weight.abs() * ReplaceGrad.apply(dists, torch.maximum(dists, self.stop)).mean()
+
+
+def parse_prompt(prompt):
+    vals = prompt.rsplit(':', 2)
+    vals = vals + ['', '1', '-inf'][len(vals):]
+    return vals[0], float(vals[1]), float(vals[2])

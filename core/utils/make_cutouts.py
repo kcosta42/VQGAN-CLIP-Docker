@@ -28,7 +28,7 @@ class MakeCutouts(nn.Module):
             if item == 'Cr':
                 aug = K.RandomCrop(size=(self.cut_size, self.cut_size), p=0.5),
             elif item == 'Re':
-                aug = K.RandomResizedCrop(size=(self.cut_size,self.cut_size), scale=(0.1,1), ratio=(0.75,1.333), cropping_mode='resample', p=0.5)  # noqa
+                aug = K.RandomResizedCrop(size=(self.cut_size, self.cut_size), scale=(0.1, 1), ratio=(0.75, 1.333), cropping_mode='resample', p=0.5)
             else:
                 aug = CUTOUTS[item]
             augment_list.append(aug)

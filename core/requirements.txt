@@ -1,5 +1,10 @@
 torch==1.9.0
-
-numpy==1.20.3
+torchvision==0.10.0
 
 einops==0.3.0
+kornia==0.5.7
+
+Pillow==8.3.1
+numpy==1.20.3
+
+tqdm==4.49.0

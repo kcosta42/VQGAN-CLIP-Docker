@@ -1,4 +1,5 @@
 import torch
+import torch.nn.functional as F
 
 
 class ReplaceGrad(torch.autograd.Function):
@@ -24,3 +25,10 @@ class ClampWithGrad(torch.autograd.Function):
     def backward(ctx, grad_in):
         input, = ctx.saved_tensors
         return grad_in * (grad_in * (input - input.clamp(ctx.min, ctx.max)) >= 0), None, None
+
+
+def vector_quantize(x, codebook):
+    d = x.pow(2).sum(dim=-1, keepdim=True) + codebook.pow(2).sum(dim=1) - 2 * x @ codebook.T
+    indices = d.argmin(-1)
+    x_q = F.one_hot(indices, codebook.shape[0]).to(d.dtype) @ codebook
+    return ReplaceGrad.apply(x_q, x)

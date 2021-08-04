@@ -1,21 +1,7 @@
-import torch.nn.functional as F
-
-from core.utils import ReplaceGrad
+from torch import optim
+from core.optimizer import DiffGrad, AdamP, RAdam
 
 from PIL import Image
-
-
-def vector_quantize(x, codebook):
-    d = x.pow(2).sum(dim=-1, keepdim=True) + codebook.pow(2).sum(dim=1) - 2 * x @ codebook.T
-    indices = d.argmin(-1)
-    x_q = F.one_hot(indices, codebook.shape[0]).to(d.dtype) @ codebook
-    return ReplaceGrad.apply(x_q, x)
-
-
-def parse_prompt(prompt):
-    vals = prompt.rsplit(':', 2)
-    vals = vals + ['', '1', '-inf'][len(vals):]
-    return vals[0], float(vals[1]), float(vals[2])
 
 
 def resize_image(image, out_size):
@@ -23,3 +9,21 @@ def resize_image(image, out_size):
     area = min(image.size[0] * image.size[1], out_size[0] * out_size[1])
     size = round((area * ratio)**0.5), round((area / ratio)**0.5)
     return image.resize(size, Image.LANCZOS)
+
+
+def get_optimizer(z, optimizer="Adam", step_size=0.1):
+    if optimizer == "Adam":
+        opt = optim.Adam([z], lr=step_size)     # LR=0.1 (Default)
+    elif optimizer == "AdamW":
+        opt = optim.AdamW([z], lr=step_size)    # LR=0.2
+    elif optimizer == "Adagrad":
+        opt = optim.Adagrad([z], lr=step_size)  # LR=0.5+
+    elif optimizer == "Adamax":
+        opt = optim.Adamax([z], lr=step_size)   # LR=0.5+?
+    elif optimizer == "DiffGrad":
+        opt = DiffGrad([z], lr=step_size)       # LR=2+?
+    elif optimizer == "AdamP":
+        opt = AdamP([z], lr=step_size)          # LR=2+?
+    elif optimizer == "RAdam":
+        opt = RAdam([z], lr=step_size)          # LR=2+?
+    return opt

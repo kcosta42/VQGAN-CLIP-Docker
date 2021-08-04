@@ -1,3 +1,5 @@
+import os
+
 from typing import List
 from dataclasses import dataclass, field
 
@@ -24,3 +26,16 @@ class Config:
     optimizer: str = 'Adam'
     output: str = 'output.png'
     augments: List[str] = field(default_factory=lambda: ['Af', 'Pe', 'Ji', 'Er'])
+
+    def __post_init__(self):
+        if not os.path.exists(self.clip_model):
+            # TODO: Download model
+            exit(f"ERROR: {self.clip_model} not found.")
+
+        if not os.path.exists(self.vqgan_config):
+            # TODO: Download config
+            exit(f"ERROR: {self.vqgan_config} not found.")
+
+        if not os.path.exists(self.vqgan_checkpoint):
+            # TODO: Download model
+            exit(f"ERROR: {self.vqgan_checkpoint} not found.")
