@@ -24,7 +24,7 @@ Configuration:
 | `step_size`            | float          | Learning rate                                                             |
 | `cutn`                 | int            | Number of cuts                                                            |
 | `cut_pow`              | float          | Cut power                                                                 |
-| `seed`                 | int            | Seed                                                                      |
+| `seed`                 | int            | Seed (-1 for random seed)                                                 |
 | `optimizer`            | str            | Optimiser ['Adam','AdamW','Adagrad','Adamax','DiffGrad','AdamP','RAdam']  |
 | `output`               | FilePath       | Output file                                                               |
 | `augments`             | List[str]      | Enabled augments ['Ji','Sh','Gn','Pe','Ro','Af','Et','Ts','Cr','Er','Re'] |

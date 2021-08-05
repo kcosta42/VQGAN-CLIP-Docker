@@ -1,0 +1,13 @@
+torch==1.9.0
+torchvision==0.10.0
+
+einops==0.3.0
+kornia==0.5.7
+
+Pillow==8.2.0
+numpy==1.20.2
+
+tqdm==4.51.0
+
+regex==2021.4.4
+ftfy==6.0.3
