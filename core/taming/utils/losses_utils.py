@@ -1,10 +1,16 @@
-from typing import List, Union, cast
+import os
+import requests
 
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
 from torchvision.models import VGG
+from torchvision.models.vgg import load_state_dict_from_url
+
+from tqdm import tqdm
+
+from typing import List, Union, cast
 
 
 def adopt_weight(weight, global_step, threshold=0, value=0.):
@@ -53,7 +59,7 @@ def make_layers(cfg: List[Union[str, int]], batch_norm: bool = False) -> nn.Sequ
     return nn.Sequential(*layers)
 
 
-def load_vgg(pretrained: bool = False, **kwargs):
+def load_vgg(model_dir: str, pretrained: bool = False, **kwargs):
     if pretrained:
         kwargs['init_weights'] = False
 
@@ -61,8 +67,23 @@ def load_vgg(pretrained: bool = False, **kwargs):
     model = VGG(make_layers(cfg, batch_norm=False), **kwargs)
 
     if pretrained:
-        print("Loaded pretrained VGG16 model from ./models/vgg16-397923af.pth")
-        state_dict = torch.load("./models/vgg16-397923af.pth")  # FIXME
+        state_dict = load_state_dict_from_url('https://download.pytorch.org/models/vgg16-397923af.pth',
+                                              model_dir=model_dir,
+                                              file_name="vgg16-397923af.pth",
+                                              progress=True)
         model.load_state_dict(state_dict)
+        print(f"Loaded pretrained VGG16 model from '{model_dir}/vgg16-397923af.pth'")
 
     return model
+
+
+def download(url, local_path, chunk_size=1024):
+    os.makedirs(os.path.split(local_path)[0], exist_ok=True)
+    with requests.get(url, stream=True) as r:
+        total_size = int(r.headers.get("content-length", 0))
+        with tqdm(total=total_size, unit="B", unit_scale=True) as pbar:
+            with open(local_path, "wb") as f:
+                for data in r.iter_content(chunk_size=chunk_size):
+                    if data:
+                        f.write(data)
+                        pbar.update(chunk_size)

@@ -1,0 +1,14 @@
+version: "3"
+
+services:
+  generate:
+    build: ./
+    command: python -m scripts.generate -c /configs/docker.json
+    volumes:
+      - ./models:/models
+      - ./configs:/configs
+      - ./core:/app/core
+      - ./scripts:/app/scripts
+      - ./outputs:/outputs
+    environment:
+      - DEVICE=cuda

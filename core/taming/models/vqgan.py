@@ -16,6 +16,7 @@ class VQModel(nn.Module):
                  n_embed,
                  embed_dim,
                  ckpt_path=None,
+                 model_dir=None,
                  ignore_keys=[],
                  image_key="image",
                  colorize_nlabels=None,
@@ -27,7 +28,7 @@ class VQModel(nn.Module):
         self.image_key = image_key
         self.encoder = Encoder(**ddconfig)
         self.decoder = Decoder(**ddconfig)
-        self.loss = VQLPIPSWithDiscriminator(**lossconfig["params"])
+        self.loss = VQLPIPSWithDiscriminator(model_dir=model_dir, **lossconfig["params"])
         self.quantize = VectorQuantizer(n_embed, embed_dim, beta=0.25,
                                         remap=remap, sane_index_shape=sane_index_shape)
         self.quant_conv = torch.nn.Conv2d(ddconfig["z_channels"], embed_dim, 1)

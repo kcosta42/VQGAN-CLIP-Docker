@@ -1,4 +1,8 @@
+import json
+
 from torch import optim
+
+from core.taming.models import vqgan
 from core.optimizer import DiffGrad, AdamP, RAdam
 
 from PIL import Image
@@ -27,3 +31,15 @@ def get_optimizer(z, optimizer="Adam", step_size=0.1):
     elif optimizer == "RAdam":
         opt = RAdam([z], lr=step_size)          # LR=2+?
     return opt
+
+
+def load_vqgan_model(config_path, checkpoint_path, model_dir=None):
+    with open(config_path, 'r') as f:
+        config = json.load(f)
+
+    model = vqgan.VQModel(model_dir=model_dir, **config["params"])
+    model.eval().requires_grad_(False)
+    model.init_from_ckpt(checkpoint_path)
+
+    del model.loss
+    return model

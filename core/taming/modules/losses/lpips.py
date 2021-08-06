@@ -1,32 +1,36 @@
 """Stripped version of https://github.com/richzhang/PerceptualSimilarity/tree/master/models"""
 
+import os
+
 import torch
 import torch.nn as nn
 from collections import namedtuple
 
-from core.taming.utils import normalize_tensor, spatial_average, load_vgg
+from core.taming.utils import normalize_tensor, spatial_average, load_vgg, download
 
 
 class LPIPS(nn.Module):
     # Learned perceptual metric
-    def __init__(self, use_dropout=True):
+    def __init__(self, model_dir="/models", use_dropout=True):
         super().__init__()
         self.scaling_layer = ScalingLayer()
         self.chns = [64, 128, 256, 512, 512]  # vg16 features
-        self.net = vgg16(pretrained=True, requires_grad=False)
+        self.net = vgg16(model_dir=model_dir, pretrained=True, requires_grad=False)
         self.lin0 = NetLinLayer(self.chns[0], use_dropout=use_dropout)
         self.lin1 = NetLinLayer(self.chns[1], use_dropout=use_dropout)
         self.lin2 = NetLinLayer(self.chns[2], use_dropout=use_dropout)
         self.lin3 = NetLinLayer(self.chns[3], use_dropout=use_dropout)
         self.lin4 = NetLinLayer(self.chns[4], use_dropout=use_dropout)
-        self.load_from_pretrained()
+        self.load_from_pretrained(model_dir)
         for param in self.parameters():
             param.requires_grad = False
 
-    def load_from_pretrained(self, name="vgg_lpips"):
-        ckpt = "./models/vgg.pth"  # FIXME
+    def load_from_pretrained(self, model_dir="/models"):
+        ckpt = f"{model_dir}/vgg.pth"
+        if not os.path.exists(ckpt):
+            download("https://heibox.uni-heidelberg.de/f/607503859c864bc1b30b/?dl=1", ckpt)
         self.load_state_dict(torch.load(ckpt, map_location=torch.device("cpu")), strict=False)
-        print("loaded pretrained LPIPS loss from {}".format(ckpt))
+        print(f"Loaded pretrained LPIPS loss from '{ckpt}'")
 
     # @classmethod
     # def from_pretrained(cls, name="vgg_lpips"):
@@ -73,9 +77,9 @@ class NetLinLayer(nn.Module):
 
 
 class vgg16(torch.nn.Module):
-    def __init__(self, requires_grad=False, pretrained=True):
+    def __init__(self, model_dir="/models", requires_grad=False, pretrained=True):
         super(vgg16, self).__init__()
-        vgg_pretrained_features = load_vgg(pretrained=pretrained).features
+        vgg_pretrained_features = load_vgg(model_dir=model_dir, pretrained=pretrained).features
         self.slice1 = torch.nn.Sequential()
         self.slice2 = torch.nn.Sequential()
         self.slice3 = torch.nn.Sequential()
