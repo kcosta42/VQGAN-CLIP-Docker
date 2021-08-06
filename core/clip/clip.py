@@ -1,5 +1,6 @@
 import hashlib
 import os
+import sys
 import urllib
 import warnings
 from typing import Any, Union, List
@@ -52,6 +53,7 @@ def _download(url: str, root: str = os.path.expanduser("~/.cache/clip")):
         else:
             warnings.warn(f"{download_target} exists, but the SHA256 checksum does not match; re-downloading the file")
 
+    sys.stderr.write('Downloading: "{}" to {}\n'.format(url, download_target))
     with urllib.request.urlopen(url) as source, open(download_target, "wb") as output:
         with tqdm(total=int(source.info().get("Content-Length")), ncols=80, unit='iB', unit_scale=True) as loop:
             while True:

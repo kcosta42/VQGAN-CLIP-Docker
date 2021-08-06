@@ -43,11 +43,11 @@ class Config:
 
         if not os.path.exists(self.vqgan_config):
             exit(f"ERROR: \"vqgan_config\": {self.vqgan_config}, <-- Configuration file not found.\n"
-                 f"Make sure the path is correct (Multiple config files are available in the `configs` directory).")
+                 f"Make sure the path is correct (Multiple config files are available in the `./configs/models` directory).")
 
         if not os.path.exists(self.vqgan_checkpoint):
             exit(f"ERROR: \"vqgan_checkpoint\": {self.vqgan_checkpoint}, <-- Model not found.\n"
-                 f"Make sure the path is correct or refer to the README.md to find where to download them.")
+                 f"Make sure the path is correct and that you have downloaded the model (Refer to the README).")
 
     def __str__(self):
         _str = (
