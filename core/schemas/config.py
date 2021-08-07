@@ -6,6 +6,11 @@ from typing import List
 from dataclasses import dataclass, field
 
 
+INIT_NOISES = ['', 'gradient', 'pixels']
+OPTIMIZERS = ['Adam', 'AdamW', 'Adagrad', 'Adamax', 'DiffGrad', 'AdamP', 'RAdam']
+AUGMENTS = ['Ji', 'Sh', 'Gn', 'Pe', 'Ro', 'Af', 'Et', 'Ts', 'Cr', 'Er', 'Re']
+
+
 @dataclass
 class Config:
     prompts: List[str] = field(default_factory=lambda: [])
@@ -28,9 +33,18 @@ class Config:
     cut_pow: float = 1.0
     seed: int = -1
     optimizer: str = 'Adam'
+    nwarm_restarts: int = -1
     augments: List[str] = field(default_factory=lambda: ['Af', 'Pe', 'Ji', 'Er'])
 
     def __post_init__(self):
+        if self.init_noise not in INIT_NOISES:
+            exit(f"ERROR: \"init_noise\": {self.init_noise}, <-- Noise algorithm not found.\n"
+                 f"Currently only the following values are supported: {INIT_NOISES}.")
+
+        if self.optimizer not in OPTIMIZERS:
+            exit(f"ERROR: \"optimizer\": {self.optimizer}, <-- Optimizer not found.\n"
+                 f"Currently only the following values are supported: {OPTIMIZERS}.")
+
         os.makedirs(self.models_dir, exist_ok=True)
         os.makedirs(self.output_dir, exist_ok=True)
         os.makedirs(f"{self.output_dir}/steps", exist_ok=True)

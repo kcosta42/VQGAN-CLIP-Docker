@@ -14,7 +14,7 @@ from tqdm import tqdm
 from core.schemas import Config
 from core.clip import clip
 
-from core.utils import MakeCutouts, Normalize, resize_image, get_optimizer, load_vqgan_model
+from core.utils import MakeCutouts, Normalize, resize_image, get_optimizer, get_scheduler, load_vqgan_model
 from core.utils.noises import random_noise_image, random_gradient_image
 from core.utils.prompt import Prompt, parse_prompt
 from core.utils.gradients import ClampWithGrad, vector_quantize
@@ -130,6 +130,9 @@ def train(z, **kwargs):
     loss.backward()
     kwargs['optimizer'].step()
 
+    if kwargs['scheduler'] is not None:
+        kwargs['scheduler'].step()
+
     with torch.no_grad():
         z.copy_(z.maximum(kwargs['z_min']).minimum(kwargs['z_max']))
 
@@ -149,11 +152,13 @@ def main():
 
     prompts = tokenize(model, perceptor, make_cutouts)
     optimizer = get_optimizer(z, PARAMS.optimizer, PARAMS.step_size)
+    scheduler = get_scheduler(optimizer, PARAMS.max_iterations, PARAMS.nwarm_restarts)
 
     kwargs = {
         'model': model,
         'perceptor': perceptor,
         'optimizer': optimizer,
+        'scheduler': scheduler,
         'prompts': prompts,
         'make_cutouts': make_cutouts,
         'z_orig': z_orig,

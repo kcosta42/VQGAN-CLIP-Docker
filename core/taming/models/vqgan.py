@@ -4,7 +4,7 @@ import torch.nn.functional as F
 
 from core.taming.modules.diffusion import Encoder, Decoder
 from core.taming.modules.vqvae import VectorQuantizer
-from core.taming.modules.losses import VQLPIPSWithDiscriminator
+from core.taming.modules.losses import VQLPIPSWithDiscriminator, DummyLoss
 
 from core.utils.loader import safe_load
 
@@ -12,9 +12,9 @@ from core.utils.loader import safe_load
 class VQModel(nn.Module):
     def __init__(self,
                  ddconfig,
-                 lossconfig,
                  n_embed,
                  embed_dim,
+                 lossconfig=None,
                  ckpt_path=None,
                  model_dir=None,
                  ignore_keys=[],
@@ -26,16 +26,24 @@ class VQModel(nn.Module):
                  ):
         super().__init__()
         self.image_key = image_key
+
         self.encoder = Encoder(**ddconfig)
         self.decoder = Decoder(**ddconfig)
-        self.loss = VQLPIPSWithDiscriminator(model_dir=model_dir, **lossconfig["params"])
+
+        self.loss = DummyLoss()
+        if lossconfig is not None:
+            self.loss = VQLPIPSWithDiscriminator(model_dir=model_dir, **lossconfig["params"])
+
         self.quantize = VectorQuantizer(n_embed, embed_dim, beta=0.25,
                                         remap=remap, sane_index_shape=sane_index_shape)
         self.quant_conv = torch.nn.Conv2d(ddconfig["z_channels"], embed_dim, 1)
         self.post_quant_conv = torch.nn.Conv2d(embed_dim, ddconfig["z_channels"], 1)
+
         if ckpt_path is not None:
             self.init_from_ckpt(ckpt_path, ignore_keys=ignore_keys)
+
         self.image_key = image_key
+
         if colorize_nlabels is not None:
             assert type(colorize_nlabels) == int
             self.register_buffer("colorize", torch.randn(3, colorize_nlabels, 1, 1))
@@ -54,6 +62,14 @@ class VQModel(nn.Module):
                 if k.startswith(ik):
                     print("Deleting key {} from state_dict.".format(k))
                     del sd[k]
+
+        if "first_stage_model.encoder.conv_in.weight" in sd:
+            stripped_state_dict = {}
+            for key in sd:
+                if key.startswith("first_stage_model."):
+                    stripped_state_dict[key[18:]] = sd[key]
+            sd = stripped_state_dict
+
         self.load_state_dict(sd, strict=False)
         print(f"Restored from {path}")
 

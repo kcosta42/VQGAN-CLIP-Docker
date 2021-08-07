@@ -19,5 +19,6 @@
     "cut_pow": 1.0,
     "seed": -1,
     "optimizer": "Adam",
+    "nwarm_restarts": -1,
     "augments": ["Af", "Pe", "Ji", "Er"]
 }

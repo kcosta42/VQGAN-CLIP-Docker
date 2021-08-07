@@ -1,9 +1,12 @@
 import json
 
+import numpy as np
+
 from torch import optim
 
 from core.taming.models import vqgan
 from core.optimizer import DiffGrad, AdamP, RAdam
+from torch.optim.lr_scheduler import CosineAnnealingWarmRestarts
 
 from PIL import Image
 
@@ -31,6 +34,17 @@ def get_optimizer(z, optimizer="Adam", step_size=0.1):
     elif optimizer == "RAdam":
         opt = RAdam([z], lr=step_size)          # LR=2+?
     return opt
+
+
+def get_scheduler(optimizer, max_iterations, nwarm_restarts=-1):
+    if nwarm_restarts == -1:
+        return None
+
+    T_0 = max_iterations
+    if nwarm_restarts > 0:
+        T_0 = int(np.ceil(max_iterations / nwarm_restarts))
+
+    return CosineAnnealingWarmRestarts(optimizer, T_0=T_0)
 
 
 def load_vqgan_model(config_path, checkpoint_path, model_dir=None):

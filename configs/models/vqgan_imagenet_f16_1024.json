@@ -1,7 +1,7 @@
 {
   "params": {
     "embed_dim": 256,
-    "n_embed": 16384,
+    "n_embed": 1024,
     "ddconfig": {
       "double_z": false,
       "z_channels": 256,
@@ -19,8 +19,7 @@
         "disc_conditional": false,
         "disc_in_channels": 3,
         "disc_start": 0,
-        "disc_weight": 0.75,
-        "disc_num_layers": 2,
+        "disc_weight": 0.8,
         "codebook_weight": 1.0
       }
     }

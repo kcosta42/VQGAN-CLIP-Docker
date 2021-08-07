@@ -30,9 +30,38 @@ cd VQGAN-CLIP-Docker
 
 Download a VQGAN model and put it in the `./models` folder.
 
-| Dataset                | Link                                                                                            |
-|------------------------|-------------------------------------------------------------------------------------------------|
-| ImageNet (f=16), 16384 | [vqgan_imagenet_f16_16384](http://mirror.io.community/blob/vqgan/vqgan_imagenet_f16_16384.ckpt) |
+<table>
+    <thead>
+        <tr>
+            <th>Dataset</th>
+            <th>Link</th>
+            <th>Config</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>ImageNet (f=16), 16384</td>
+            <td><a href="http://mirror.io.community/blob/vqgan/vqgan_imagenet_f16_16384.ckpt">vqgan_imagenet_f16_16384.ckpt</a></td>
+            <td>./configs/models/vqgan_imagenet_f16_16384.json</td>
+        </tr>
+        <tr>
+            <td>ImageNet (f=16), 1024</td>
+            <td><a href="http://mirror.io.community/blob/vqgan/vqgan_imagenet_f16_1024.ckpt">vqgan_imagenet_f16_1024.ckpt</a></td>
+            <td>./configs/models/vqgan_imagenet_f16_1024.json</td>
+        </tr>
+        <tr>
+            <td>FacesHQ (f=16)</td>
+            <td><a href="https://app.koofr.net/links/a04deec9-0c59-4673-8b37-3d696fe63a5d?path=%2F2020-11-13T21-41-45_faceshq_transformer%2Fcheckpoints">vqgan_faceshq_f16_1024.ckpt</a></td>
+            <td>./configs/models/vqgan_faceshq_f16_1024.json</td>
+        </tr>
+        <tr>
+            <td>COCO-Stuff (f=16)</td>
+            <td><a href="https://dl.nmkd.de/ai/clip/coco/coco.ckpt">vqgan_coco_f16_8192.ckpt</a></td>
+            <td>./configs/models/vqgan_coco_f16_1024.json</td>
+        </tr>
+    </tbody>
+</table>
+
 
 For GPU capability, make sure you have CUDA installed on your system (tested with CUDA 11.1+).
 
@@ -121,6 +150,7 @@ make generate-cpu
 | `cut_pow`              | float          | Cut power                                                                 |
 | `seed`                 | int            | Seed (-1 for random seed)                                                 |
 | `optimizer`            | str            | Optimiser ['Adam','AdamW','Adagrad','Adamax','DiffGrad','AdamP','RAdam']  |
+| `nwarm_restarts`       | int            | Number of time the learning rate is reseted (-1 to disable LR decay)      |
 | `augments`             | List[str]      | Enabled augments ['Ji','Sh','Gn','Pe','Ro','Af','Et','Ts','Cr','Er','Re'] |
 
 ## Acknowledgments
