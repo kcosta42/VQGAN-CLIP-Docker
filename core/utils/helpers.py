@@ -1,14 +1,16 @@
 import json
+import random
 
 import numpy as np
 
-from torch import optim
-
-from core.taming.models import vqgan
-from core.optimizer import DiffGrad, AdamP, RAdam
+import torch
+import torch.optim as optim
 from torch.optim.lr_scheduler import CosineAnnealingWarmRestarts
 
 from PIL import Image
+
+from core.taming.models import vqgan
+from core.optimizer import DiffGrad, AdamP, RAdam
 
 
 def resize_image(image, out_size):
@@ -57,3 +59,15 @@ def load_vqgan_model(config_path, checkpoint_path, model_dir=None):
 
     del model.loss
     return model
+
+
+def global_seed(seed: int):
+    seed = seed if seed != -1 else torch.seed()
+    if seed > 2**32 - 1:
+        seed = seed >> 32
+
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    print(f"Global seed set to {seed}.")

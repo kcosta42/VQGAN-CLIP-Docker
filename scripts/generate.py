@@ -14,7 +14,7 @@ from tqdm import tqdm
 from core.schemas import Config
 from core.clip import clip
 
-from core.utils import MakeCutouts, Normalize, resize_image, get_optimizer, get_scheduler, load_vqgan_model
+from core.utils import MakeCutouts, Normalize, resize_image, get_optimizer, get_scheduler, load_vqgan_model, global_seed
 from core.utils.noises import random_noise_image, random_gradient_image
 from core.utils.prompt import Prompt, parse_prompt
 from core.utils.gradients import ClampWithGrad, vector_quantize
@@ -43,7 +43,7 @@ def initialize_image(model):
         z, *_ = model.encode(pil_tensor.to(DEVICE).unsqueeze(0) * 2 - 1)
         return z
 
-    if PARAMS.init_image:
+    if PARAMS.init_image and os.path.exists(PARAMS.init_image):
         z = encode(Image.open(PARAMS.init_image))
     elif PARAMS.init_noise == 'pixels':
         z = encode(random_noise_image(PARAMS.size[0], PARAMS.size[1]))
@@ -184,9 +184,8 @@ if __name__ == "__main__":
         PARAMS = Config(**json.load(f))
 
     print(f"Running on {DEVICE}.")
-    PARAMS.seed = PARAMS.seed if PARAMS.seed != -1 else torch.seed()
-    torch.manual_seed(PARAMS.seed)
-
     print(PARAMS)
+
+    global_seed(PARAMS.seed)
 
     main()

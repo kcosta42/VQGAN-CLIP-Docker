@@ -1,0 +1,35 @@
+{
+  "base_learning_rate": 4.5e-6,
+  "batch_size": 1,
+  "epochs": 1000,
+  "output_dir": "./outputs",
+  "models_dir": "./models",
+  "data_dir": "./data",
+  "seed": -1,
+  "resume_checkpoint": "",
+  "params": {
+    "embed_dim": 256,
+    "n_embed": 1024,
+    "ddconfig": {
+      "double_z": false,
+      "z_channels": 256,
+      "resolution": 256,
+      "in_channels": 3,
+      "out_ch": 3,
+      "ch": 128,
+      "ch_mult": [1, 1, 2, 2, 4],
+      "num_res_blocks": 2,
+      "attn_resolutions": [16],
+      "dropout": 0.0
+    },
+    "lossconfig": {
+      "params": {
+        "disc_conditional": false,
+        "disc_in_channels": 3,
+        "disc_start": 25000,
+        "disc_weight": 0.8,
+        "codebook_weight": 1.0
+      }
+    }
+  }
+}

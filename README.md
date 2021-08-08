@@ -4,7 +4,7 @@
 
 > Zero-Shot Text-to-Image Generation VQGAN+CLIP Dockerized
 
-This is a stripped and minimal dependency repository for running locally or in production VQGAN+CLIP.
+This is a stripped and minimal dependencies repository for running locally or in production VQGAN+CLIP.
 
 For a Google Colab notebook [see the original repository](#Acknowledgments).
 
@@ -57,7 +57,7 @@ Download a VQGAN model and put it in the `./models` folder.
         <tr>
             <td>COCO-Stuff (f=16)</td>
             <td><a href="https://dl.nmkd.de/ai/clip/coco/coco.ckpt">vqgan_coco_f16_8192.ckpt</a></td>
-            <td>./configs/models/vqgan_coco_f16_1024.json</td>
+            <td>./configs/models/vqgan_coco_f16_8192.json</td>
         </tr>
     </tbody>
 </table>

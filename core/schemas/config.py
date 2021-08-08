@@ -21,11 +21,11 @@ class Config:
     init_image: str = ""
     init_noise: str = "gradient"
     init_weight: float = 0.0
-    output_dir: str = "/outputs"
-    models_dir: str = "/models"
+    output_dir: str = "./outputs"
+    models_dir: str = "./models"
     clip_model: str = 'ViT-B/32'
-    vqgan_checkpoint: str = '/models/vqgan_imagenet_f16_16384.ckpt'
-    vqgan_config: str = '/configs/models/vqgan_imagenet_f16_16384.json'
+    vqgan_checkpoint: str = './models/vqgan_imagenet_f16_16384.ckpt'
+    vqgan_config: str = './configs/models/vqgan_imagenet_f16_16384.json'
     noise_prompt_seeds: List[int] = field(default_factory=lambda: [])
     noise_prompt_weights: List[float] = field(default_factory=lambda: [])
     step_size: float = 0.1

@@ -2,3 +2,4 @@
 *.pth
 *.ckpt
 *.bin
+*.pkl
