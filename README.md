@@ -1,5 +1,12 @@
 # VQGAN-CLIP-Docker
 
+- [Setup](#Setup)
+- [Usage](#Usage)
+    - [Inference](#Inference)
+    - [Training](#Training)
+- [Acknowledgments](#Acknowledgments)
+- [Citations](#Citations)
+
 ## About
 
 > Zero-Shot Text-to-Image Generation VQGAN+CLIP Dockerized
@@ -19,7 +26,8 @@ For a Google Colab notebook [see the original repository](#Acknowledgments).
     <img src="./samples/gundam.png" width="256px">
 </div>
 
-## Setup
+
+# Setup
 
 Clone this repository and `cd` inside.
 
@@ -28,7 +36,7 @@ git clone https://github.com/kcosta42/VQGAN-CLIP-Docker.git
 cd VQGAN-CLIP-Docker
 ```
 
-Download a VQGAN model and put it in the `./models` folder.
+You can download a pretrained VQGAN model and put it in the `./models` folder.
 
 <table>
     <thead>
@@ -69,7 +77,7 @@ For GPU capability, make sure you have CUDA installed on your system (tested wit
 - 11 GB of VRAM is required to generate 512x512 images.
 - 24 GB of VRAM is required to generate 1024x1024 images. (Untested)
 
-### Local
+## Local
 
 Install the Python requirements
 
@@ -82,7 +90,7 @@ To know if you can run this on your GPU, the following command must return `True
 python3 -c "import torch; print(torch.cuda.is_available());"
 ```
 
-### Docker
+## Docker
 
 > Make sure you have `docker` and `docker-compose` installed. `nvidia-docker` is needed if you want to run this on your GPU through Docker.
 
@@ -92,11 +100,13 @@ A Makefile is provided for ease of use.
 make build  # Build the docker image
 ```
 
-## Usage
+# Usage
 
-Two configuration file are provided `./configs/local.json` and `./configs/docker.json`. They are ready to go, but you may want to edit them to meet your need. Check the [Configuration section](#Configuration) to understand each field.
+## Inference
 
-The resulting generations can be found in the `./outputs` folder.
+Two configuration files are provided `./configs/local.json` and `./configs/docker.json`. They are ready to go, but you may want to edit them to meet your need. Check the [Configuration section](#Configuration) to understand each field.
+
+By default, the resulting generations can be found in the `./outputs` folder.
 
 ### GPU
 
@@ -153,7 +163,84 @@ make generate-cpu
 | `nwarm_restarts`       | int            | Number of time the learning rate is reseted (-1 to disable LR decay)      |
 | `augments`             | List[str]      | Enabled augments ['Ji','Sh','Gn','Pe','Ro','Af','Et','Ts','Cr','Er','Re'] |
 
-## Acknowledgments
+## Training
+
+> These are instructions to train a new VQGAN model. You can also finetunes the pretrained models but you may need to tweak the training script.
+
+Two models configuration files are provided `./configs/models/vqgan_custom.json` and `./configs/models/vqgan_custom_docker.json`. They are ready to go, but you may want to edit them to meet your need. Check the [Model Configuration](#Model-Configuration) to understand each field.
+
+By default, the models are saved in the `./models/checkpoints` folder.
+
+### Dataset
+
+Put your image in a folder inside the data directory (`./data` by default).
+
+The dataset must be structured as follow:
+
+```sh
+./data/
+├── class_x/
+│   ├── xxx.png
+│   ├── xxy.jpg
+│   └── ...
+│       └── xxz.ppm
+└── class_y/
+    ├── 123.bmp
+    ├── nsdf3.tif
+    └── ...
+    └── asd932_.webp
+```
+
+### GPU
+
+To run locally:
+
+```py
+python3 -m scripts.train -c ./configs/models/vqgan_custom.json
+```
+
+To run on docker:
+
+```py
+make train
+```
+
+### CPU
+
+To run locally:
+
+```py
+DEVICE=cpu python3 -m scripts.train -c ./configs/models/vqgan_custom.json
+```
+
+To run on docker:
+
+```py
+make train-cpu
+```
+
+### Model Configuration
+
+| Argument               | Type           | Descriptions                                                              |
+|------------------------|----------------|---------------------------------------------------------------------------|
+| `base_learning_rate`   | float          | Initial Learning rate                                                     |
+| `batch_size`           | int            | Batch size (Adjust based on your GPU capability)                          |
+| `epochs`               | int            | Maximum number of epoch                                                   |
+| `output_dir`           | FilePath       | Path to directory where to save training images                           |
+| `models_dir`           | FilePath       | Path to directory where to save the model                                 |
+| `data_dir`             | FilePath       | Path to data directory                                                    |
+| `seed`                 | int            | Seed (-1 for random seed)                                                 |
+| `resume_checkpoint`    | FilePath       | Path to pretrained model                                                  |
+
+### Infos
+
+- Let the Generator train without the Discriminator for a few epochs (~3-5 epochs for ImageNet), then enable the Discriminator. <br/> The variable `lossconfig.params.disc_start` correspond to the number of global step (ie. batch iterations) before enabling the Discriminator.
+- Once enabled, the Discriminator loss will stagnate around ~1.0, __this is a normal behaviour__. The loss will decrease in later epochs. (It can take a _very_ long time).
+- If you've enabled the Discriminator too soon, the Generator will take a lot more time to train.
+- Basically there is no rules for the number of epochs. If your dataset is large enough, there is no risk of overfitting. So the more you train, the better.
+
+
+# Acknowledgments
 
 [VQGAN+CLIP](https://github.com/nerdyrodent/VQGAN-CLIP)
 
@@ -163,7 +250,7 @@ make generate-cpu
 
 [DALLE-PyTorch](https://github.com/lucidrains/DALLE-pytorch)
 
-## Citations
+# Citations
 
 ```bibtex
 @misc{unpublished2021clip,

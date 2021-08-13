@@ -2,9 +2,9 @@
   "base_learning_rate": 4.5e-6,
   "batch_size": 4,
   "epochs": 1000,
-  "output_dir": "./outputs",
-  "models_dir": "./models",
-  "data_dir": "./data",
+  "output_dir": "/outputs",
+  "models_dir": "/models",
+  "data_dir": "/data",
   "seed": -1,
   "resume_checkpoint": "",
   "params": {

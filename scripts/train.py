@@ -13,6 +13,7 @@ from tqdm import tqdm
 
 from core.schemas import TrainConfig
 from core.utils import global_seed
+from core.utils.loader import safe_load
 from core.taming.models import vqgan
 
 
@@ -24,6 +25,20 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("-c", "--config", type=str, required=True, help="Path to configuration file.")
     return parser.parse_args()
+
+
+def save_model(model, optimizers, epoch, path):
+    save_dict = {
+        "epoch": epoch,
+        "global_step": model.global_step,
+        "state_dict": model.state_dict(),
+        "optimizer_states": [
+            optimizers[0].state_dict(),
+            optimizers[1].state_dict(),
+        ]
+    }
+    torch.save(save_dict, path)
+    tqdm.write(f"Checkpoint saved in {path}")
 
 
 def main():
@@ -40,10 +55,21 @@ def main():
     PARAMS.params["model_dir"] = PARAMS.models_dir
     model = vqgan.VQModel(**PARAMS.params).to(DEVICE)
     model.learning_rate = PARAMS.batch_size * PARAMS.base_learning_rate
-    optimizers, _ = model.configure_optimizers()
-
     model.global_step = 0
-    for epoch in range(PARAMS.epochs):
+
+    optimizers, _ = model.configure_optimizers()
+    epoch = 0
+
+    if PARAMS.resume_checkpoint:
+        save_dict = safe_load(PARAMS.resume_checkpoint, map_location='cpu')
+        epoch = save_dict["epoch"]
+        model.global_step = save_dict["global_step"]
+        model.load_state_dict(save_dict["state_dict"])
+        optimizers[0].load_state_dict(save_dict["optimizer_states"][0])
+        optimizers[1].load_state_dict(save_dict["optimizer_states"][1])
+        print(f"Restored model from {PARAMS.resume_checkpoint}")
+
+    while epoch < PARAMS.epochs:
         for i, (images, _) in tqdm(enumerate(loader), total=len(loader)):
             images.to(DEVICE)
 
@@ -59,16 +85,17 @@ def main():
 
             tqdm.write(f"Epoch: {epoch} | Batch: {i} | losses: {losses}")
 
-            if i % 100 == 0:
-                torch.save(model, f"{PARAMS.models_dir}/checkpoints/last.ckpt")
+            if i % 1000 == 0:
+                save_model(model, optimizers, epoch, f"{PARAMS.models_dir}/checkpoints/last.ckpt")
 
                 with torch.no_grad():
                     dec, _ = model(model.get_input(images, device=DEVICE))
                     TF.to_pil_image(dec[0].cpu()).save(f"{PARAMS.output_dir}/training/{epoch}_{i}.png")
 
             model.global_step += 1
+        epoch += 1
 
-    torch.save({"state_dict": model.state_dict()}, f"{PARAMS.models_dir}/checkpoints/final.ckpt")
+    save_model(model, optimizers, epoch, f"{PARAMS.models_dir}/checkpoints/final.ckpt")
 
 
 if __name__ == "__main__":
@@ -84,6 +111,6 @@ if __name__ == "__main__":
     print(f"Running on {DEVICE}.")
     print(PARAMS)
 
-    global_seed(args.seed)
+    global_seed(PARAMS.seed)
 
     main()

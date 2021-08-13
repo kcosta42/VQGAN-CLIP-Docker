@@ -10,3 +10,9 @@ generate:
 
 generate-cpu:
 	$(COMPOSE) run -e DEVICE='cpu' generate
+
+train:
+	$(COMPOSE) run train
+
+train-cpu:
+	$(COMPOSE) run -e DEVICE='cpu' train

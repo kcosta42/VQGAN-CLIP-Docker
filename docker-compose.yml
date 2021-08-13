@@ -12,3 +12,15 @@ services:
       - ./outputs:/outputs
     environment:
       - DEVICE=cuda
+
+  train:
+    build: ./
+    command: python -m scripts.train -c /configs/models/vqgan_custom_docker.json
+    volumes:
+      - ./models:/models
+      - ./configs:/configs
+      - ./core:/app/core
+      - ./scripts:/app/scripts
+      - ./outputs:/outputs
+    environment:
+      - DEVICE=cuda

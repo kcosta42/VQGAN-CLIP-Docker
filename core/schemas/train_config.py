@@ -28,7 +28,7 @@ class TrainConfig:
         os.makedirs(train_dir, exist_ok=True)
         print(f"Training outputs will be saved in {train_dir}")
 
-        if not os.path.exists(self.resume_checkpoint):
+        if self.resume_checkpoint and not os.path.exists(self.resume_checkpoint):
             exit(f"ERROR: \"resume_checkpoint\": {self.resume_checkpoint}, <-- Model not found.\n"
                  f"Make sure the path is correct (Follow instructions in the README).")
 
