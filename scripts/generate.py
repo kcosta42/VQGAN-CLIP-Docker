@@ -15,7 +15,7 @@ from core.schemas import Config
 from core.clip import clip
 
 from core.utils import MakeCutouts, Normalize, resize_image, get_optimizer, get_scheduler, load_vqgan_model, global_seed
-from core.utils.noises import random_noise_image, random_gradient_image
+from core.utils.noises import random_noise_image, random_fractal_image, random_gradient_image
 from core.utils.prompt import Prompt, parse_prompt
 from core.utils.gradients import ClampWithGrad, vector_quantize
 
@@ -47,6 +47,8 @@ def initialize_image(model):
         z = encode(Image.open(PARAMS.init_image))
     elif PARAMS.init_noise == 'pixels':
         z = encode(random_noise_image(PARAMS.size[0], PARAMS.size[1]))
+    elif PARAMS.init_noise == 'fractal':
+        z = encode(random_fractal_image(PARAMS.size[0], PARAMS.size[1]))
     elif PARAMS.init_noise == 'gradient':
         z = encode(random_gradient_image(PARAMS.size[0], PARAMS.size[1]))
     else:
@@ -105,12 +107,19 @@ def checkin(z, losses, **kwargs):
 
 def ascend_txt(z, **kwargs):
     out = synth(z, model=kwargs['model'])
-    iii = kwargs['perceptor'].encode_image(NORMALIZE(kwargs['make_cutouts'](out))).float()
+    cutouts = kwargs['make_cutouts'](out)
+    iii = kwargs['perceptor'].encode_image(NORMALIZE(cutouts)).float()
 
     step = kwargs['step']
     result = []
     if PARAMS.init_weight:
-        result.append(F.mse_loss(z, torch.zeros_like(kwargs['z_orig'])) * ((1 / torch.tensor(step * 2 + 1)) * PARAMS.init_weight) / 2)
+        mse_weight = kwargs['mse_weight']
+        result.append(F.mse_loss(z, kwargs['z_orig']) * mse_weight / 2)
+
+        mse_decay = PARAMS.init_weight / (PARAMS.max_iterations / PARAMS.mse_decay_rate)
+        with torch.no_grad():
+          if step > 0 and step % PARAMS.mse_decay_rate == 0:
+            kwargs['mse_weight'] = max(mse_weight - mse_decay, 0)
 
     for prompt in kwargs['prompts']:
         result.append(prompt(iii))
@@ -147,7 +156,7 @@ def main():
     z_min = model.quantize.embedding.weight.min(dim=0).values[None, :, None, None]
     z_max = model.quantize.embedding.weight.max(dim=0).values[None, :, None, None]
     z = initialize_image(model)
-    z_orig = z.clone()
+    z_orig = torch.zeros_like(z)
     z.requires_grad_(True)
 
     prompts = tokenize(model, perceptor, make_cutouts)
@@ -164,6 +173,7 @@ def main():
         'z_orig': z_orig,
         'z_min': z_min,
         'z_max': z_max,
+        'mse_weight': PARAMS.init_weight,
     }
     try:
         for step in tqdm(range(PARAMS.max_iterations)):

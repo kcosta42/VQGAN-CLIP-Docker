@@ -138,30 +138,31 @@ make generate-cpu
 
 ### Configuration
 
-| Argument               | Type           | Descriptions                                                              |
-|------------------------|----------------|---------------------------------------------------------------------------|
-| `prompts`              | List[str]      | Text prompts                                                              |
-| `image_prompts`        | List[FilePath] | Image prompts / target image path                                         |
-| `max_iterations`       | int            | Number of iterations                                                      |
-| `save_freq`            | int            | Save image iterations                                                     |
-| `size`                 | [int, int]     | Image size (width height)                                                 |
-| `init_image`           | FilePath       | Initial image                                                             |
-| `init_noise`           | str            | Initial noise image ['gradient','pixels']                                 |
-| `init_weight`          | float          | Initial weight                                                            |
-| `output_dir`           | FilePath       | Path to output directory                                                  |
-| `models_dir`           | FilePath       | Path to models cache directory                                            |
-| `clip_model`           | FilePath       | CLIP model path or name                                                   |
-| `vqgan_checkpoint`     | FilePath       | VQGAN checkpoint path                                                     |
-| `vqgan_config`         | FilePath       | VQGAN config path                                                         |
-| `noise_prompt_seeds`   | List[int]      | Noise prompt seeds                                                        |
-| `noise_prompt_weights` | List[float]    | Noise prompt weights                                                      |
-| `step_size`            | float          | Learning rate                                                             |
-| `cutn`                 | int            | Number of cuts                                                            |
-| `cut_pow`              | float          | Cut power                                                                 |
-| `seed`                 | int            | Seed (-1 for random seed)                                                 |
-| `optimizer`            | str            | Optimiser ['Adam','AdamW','Adagrad','Adamax','DiffGrad','AdamP','RAdam']  |
-| `nwarm_restarts`       | int            | Number of time the learning rate is reseted (-1 to disable LR decay)      |
-| `augments`             | List[str]      | Enabled augments ['Ji','Sh','Gn','Pe','Ro','Af','Et','Ts','Cr','Er','Re'] |
+| Argument               | Type           | Descriptions                                                                   |
+|------------------------|----------------|--------------------------------------------------------------------------------|
+| `prompts`              | List[str]      | Text prompts                                                                   |
+| `image_prompts`        | List[FilePath] | Image prompts / target image path                                              |
+| `max_iterations`       | int            | Number of iterations                                                           |
+| `save_freq`            | int            | Save image iterations                                                          |
+| `size`                 | [int, int]     | Image size (width height)                                                      |
+| `init_image`           | FilePath       | Initial image                                                                  |
+| `init_noise`           | str            | Initial noise image ["gradient","pixels","fractal"]                            |
+| `init_weight`          | float          | Initial weight                                                                 |
+| `mse_decay_rate`       | int            | Slowly decrease the MSE Loss each specified iterations until it reach about 0  |
+| `output_dir`           | FilePath       | Path to output directory                                                       |
+| `models_dir`           | FilePath       | Path to models cache directory                                                 |
+| `clip_model`           | FilePath       | CLIP model path or name                                                        |
+| `vqgan_checkpoint`     | FilePath       | VQGAN checkpoint path                                                          |
+| `vqgan_config`         | FilePath       | VQGAN config path                                                              |
+| `noise_prompt_seeds`   | List[int]      | Noise prompt seeds                                                             |
+| `noise_prompt_weights` | List[float]    | Noise prompt weights                                                           |
+| `step_size`            | float          | Learning rate                                                                  |
+| `cutn`                 | int            | Number of cuts                                                                 |
+| `cut_pow`              | float          | Cut power                                                                      |
+| `seed`                 | int            | Seed (-1 for random seed)                                                      |
+| `optimizer`            | str            | Optimiser ["Adam","AdamW","Adagrad","Adamax","DiffGrad","AdamP","RAdam"]       |
+| `nwarm_restarts`       | int            | Number of time the learning rate is reseted (-1 to disable LR decay)           |
+| `augments`             | List[str]      | Enabled augments ["Ji","Sh","Gn","Pe","Ro","Af","Et","Ts","Cr","Er","Re","Hf"] |
 
 ## Training
 

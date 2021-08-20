@@ -4,15 +4,16 @@ import torch.nn as nn
 import kornia.augmentation as K
 
 CUTOUTS = {
-    'Ji': K.ColorJitter(brightness=0.1, contrast=0.1, saturation=0.05, hue=0.05, p=0.5),
-    'Sh': K.RandomSharpness(sharpness=0.4, p=0.7),
-    'Gn': K.RandomGaussianNoise(mean=0.0, std=1., p=0.5),
-    'Pe': K.RandomPerspective(distortion_scale=0.7, p=0.7),
-    'Ro': K.RandomRotation(degrees=15, p=0.7),
-    'Af': K.RandomAffine(degrees=15, translate=0.1, p=0.7, padding_mode='border'),
-    'Et': K.RandomElasticTransform(p=0.7),
-    'Ts': K.RandomThinPlateSpline(scale=0.3, same_on_batch=False, p=0.7),
-    'Er': K.RandomErasing((.1, .4), (.3, 1 / .3), same_on_batch=True, p=0.7),
+    'Ji': K.ColorJitter(brightness=0.1, contrast=0.1, saturation=0.1, hue=0.1, p=0.5),
+    'Sh': K.RandomSharpness(sharpness=0.5, p=0.5),
+    'Gn': K.RandomGaussianNoise(mean=0.0, std=1.0, p=0.5),
+    'Pe': K.RandomPerspective(distortion_scale=0.5, p=0.5),
+    'Ro': K.RandomRotation(degrees=15, p=0.5),
+    'Af': K.RandomAffine(degrees=15, translate=0.1, shear=15, padding_mode='border', keepdim=True, p=0.5),
+    'Et': K.RandomElasticTransform(p=0.5),
+    'Hf': K.RandomHorizontalFlip(p=0.5),
+    'Ts': K.RandomThinPlateSpline(scale=0.2, same_on_batch=False, p=0.5),
+    'Er': K.RandomErasing(scale=(0.02, 0.33), ratio=(0.3, 3.3), same_on_batch=False, p=0.5),
 }
 
 
@@ -26,15 +27,14 @@ class MakeCutouts(nn.Module):
         augment_list = []
         for item in augments:
             if item == 'Cr':
-                aug = K.RandomCrop(size=(self.cut_size, self.cut_size), p=0.5),
+                aug = K.RandomCrop(size=(self.cut_size, self.cut_size), p=0.5)
             elif item == 'Re':
-                aug = K.RandomResizedCrop(size=(self.cut_size, self.cut_size), scale=(0.1, 1), ratio=(0.75, 1.333), cropping_mode='resample', p=0.5)
+                aug = K.RandomResizedCrop(size=(self.cut_size, self.cut_size), cropping_mode='resample', p=0.5)
             else:
                 aug = CUTOUTS[item]
             augment_list.append(aug)
 
         print(f"Augmentations: {augment_list}")
-
         self.augs = nn.Sequential(*augment_list)
 
         self.noise_fac = 0.1

@@ -6,9 +6,9 @@ from typing import List
 from dataclasses import dataclass, field
 
 
-INIT_NOISES = ['', 'gradient', 'pixels']
+INIT_NOISES = ['', 'gradient', 'pixels', 'fractal']
 OPTIMIZERS = ['Adam', 'AdamW', 'Adagrad', 'Adamax', 'DiffGrad', 'AdamP', 'RAdam']
-AUGMENTS = ['Ji', 'Sh', 'Gn', 'Pe', 'Ro', 'Af', 'Et', 'Ts', 'Cr', 'Er', 'Re']
+AUGMENTS = ['Ji', 'Sh', 'Gn', 'Pe', 'Ro', 'Af', 'Et', 'Ts', 'Cr', 'Er', 'Re', 'Hf']
 
 
 @dataclass
@@ -21,6 +21,7 @@ class Config:
     init_image: str = ""
     init_noise: str = "gradient"
     init_weight: float = 0.0
+    mse_decay_rate: float = 0.0
     output_dir: str = "./outputs"
     models_dir: str = "./models"
     clip_model: str = 'ViT-B/32'
