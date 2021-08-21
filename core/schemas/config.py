@@ -18,13 +18,14 @@ class Config:
     max_iterations: int = 500
     save_freq: int = 50
     size: List[int] = field(default_factory=lambda: [256, 256])
+    pixelart: List[int] = None
     init_image: str = ""
     init_noise: str = "gradient"
     init_weight: float = 0.0
     mse_decay_rate: float = 0.0
     output_dir: str = "./outputs"
     models_dir: str = "./models"
-    clip_model: str = 'ViT-B/32'
+    clip_model: str = 'ViT-B/16'
     vqgan_checkpoint: str = './models/vqgan_imagenet_f16_16384.ckpt'
     vqgan_config: str = './configs/models/vqgan_imagenet_f16_16384.json'
     noise_prompt_seeds: List[int] = field(default_factory=lambda: [])
@@ -64,6 +65,10 @@ class Config:
             exit(f"ERROR: \"vqgan_checkpoint\": {self.vqgan_checkpoint}, <-- Model not found.\n"
                  f"Make sure the path is correct and that you have downloaded the model (Refer to the README).")
 
+        if self.pixelart:
+            print("Enabling PixelArt mode. It is recommended to add 'pixelart' to your prompt.")
+
+
     def __str__(self):
         _str = (
             f"Config:\n"
@@ -72,9 +77,11 @@ class Config:
             f"  - max_iterations: {self.max_iterations}\n"
             f"  - save_freq: {self.save_freq}\n"
             f"  - size: {self.size}\n"
+            f"  - pixelart: {self.pixelart}\n"
             f"  - init_image: {self.init_image}\n"
             f"  - init_noise: {self.init_noise}\n"
             f"  - init_weight: {self.init_weight}\n"
+            f"  - mse_decay_rate: {self.mse_decay_rate}\n"
             f"  - output_dir: {self.output_dir}\n"
             f"  - models_dir: {self.models_dir}\n"
             f"  - clip_model: {self.clip_model}\n"
@@ -87,6 +94,7 @@ class Config:
             f"  - cut_pow: {self.cut_pow}\n"
             f"  - seed: {self.seed}\n"
             f"  - optimizer: {self.optimizer}\n"
+            f"  - nwarm_restarts: {self.nwarm_restarts}\n"
             f"  - augments: {self.augments}\n"
         )
         return _str

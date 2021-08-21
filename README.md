@@ -145,6 +145,7 @@ make generate-cpu
 | `max_iterations`       | int            | Number of iterations                                                           |
 | `save_freq`            | int            | Save image iterations                                                          |
 | `size`                 | [int, int]     | Image size (width height)                                                      |
+| `pixelart`             | [int, int]     | Pixelart image size (width height) (Optional, remove option to disable)        |
 | `init_image`           | FilePath       | Initial image                                                                  |
 | `init_noise`           | str            | Initial noise image ["gradient","pixels","fractal"]                            |
 | `init_weight`          | float          | Initial weight                                                                 |

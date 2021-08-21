@@ -7,6 +7,8 @@ import torch.nn.functional as F
 
 import torchvision.transforms.functional as TF
 
+import numpy as np
+
 from PIL import Image
 
 from tqdm import tqdm
@@ -92,7 +94,12 @@ def tokenize(model, perceptor, make_cutouts):
 
 def synth(z, *, model):
     z_q = vector_quantize(z.movedim(1, 3), model.quantize.embedding.weight).movedim(3, 1)
-    return ClampWithGrad.apply(model.decode(z_q).add(1).div(2), 0, 1)
+    z_q = ClampWithGrad.apply(model.decode(z_q).add(1).div(2), 0, 1)
+
+    if PARAMS.pixelart:
+        z_q = F.avg_pool2d(z_q, tuple(np.ceil(np.divide(PARAMS.size, PARAMS.pixelart)).astype('uint8')))
+
+    return z_q
 
 
 @torch.no_grad()
