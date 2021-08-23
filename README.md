@@ -49,12 +49,12 @@ You can download a pretrained VQGAN model and put it in the `./models` folder.
     <tbody>
         <tr>
             <td>ImageNet (f=16), 16384</td>
-            <td><a href="http://mirror.io.community/blob/vqgan/vqgan_imagenet_f16_16384.ckpt">vqgan_imagenet_f16_16384.ckpt</a></td>
+            <td><a href="https://heibox.uni-heidelberg.de/d/a7530b09fed84f80a887/files/?p=%2Fckpts%2Flast.ckpt&dl=1">vqgan_imagenet_f16_16384.ckpt</a></td>
             <td>./configs/models/vqgan_imagenet_f16_16384.json</td>
         </tr>
         <tr>
             <td>ImageNet (f=16), 1024</td>
-            <td><a href="http://mirror.io.community/blob/vqgan/vqgan_imagenet_f16_1024.ckpt">vqgan_imagenet_f16_1024.ckpt</a></td>
+            <td><a href="https://heibox.uni-heidelberg.de/d/8088892a516d4e3baf92/files/?p=%2Fckpts%2Flast.ckpt&dl=1">vqgan_imagenet_f16_1024.ckpt</a></td>
             <td>./configs/models/vqgan_imagenet_f16_1024.json</td>
         </tr>
         <tr>
