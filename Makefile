@@ -16,3 +16,6 @@ train:
 
 train-cpu:
 	$(COMPOSE) run -e DEVICE='cpu' train
+
+
+.PHONY: all build generate generate-cpu train train-cpu
