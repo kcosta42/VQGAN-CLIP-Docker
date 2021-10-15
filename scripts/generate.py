@@ -108,8 +108,12 @@ def checkin(z, losses, **kwargs):
     tqdm.write(f"step: {kwargs['step']}, loss: {sum(losses).item():g}, losses: {losses_str}")
     out = synth(z, model=kwargs['model'])
 
-    filename = f"{PARAMS.output_dir}/{'_'.join(PARAMS.prompts).replace(' ', '_')}.png"
-    TF.to_pil_image(out[0].cpu()).save(filename)
+    filename = "output"
+    if len(PARAMS.prompts):
+        filename = '_'.join(PARAMS.prompts).replace(' ', '_')
+
+    path = f"{PARAMS.output_dir}/{filename}.png"
+    TF.to_pil_image(out[0].cpu()).save(path)
 
 
 def ascend_txt(z, **kwargs):

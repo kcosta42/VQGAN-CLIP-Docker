@@ -92,7 +92,7 @@ python3 -c "import torch; print(torch.cuda.is_available());"
 
 ## Docker
 
-> Make sure you have `docker` and `docker-compose` installed. `nvidia-docker` is needed if you want to run this on your GPU through Docker.
+> Make sure you have `docker` and `docker-compose` v1.28.0+ installed. `nvidia-docker` is needed if you want to run this on your GPU through Docker.
 
 A Makefile is provided for ease of use.
 
