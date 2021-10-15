@@ -12,6 +12,11 @@ services:
       - ./outputs:/outputs
     environment:
       - DEVICE=cuda
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
 
   train:
     build: ./
@@ -24,3 +29,8 @@ services:
       - ./outputs:/outputs
     environment:
       - DEVICE=cuda
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
